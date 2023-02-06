@@ -10,9 +10,9 @@ GAME_DIR_PATTERN = "game"
 
 def create_dir(path):
     if not os.path.exists(path):
-        if os.name is 'nt':
+        if os.name == 'nt':
             os.mkdir(path)
-        elif os.name is 'posix':
+        elif os.name == 'posix':
             os.makedirs(path)
 
 
@@ -38,10 +38,22 @@ def get_name_from_paths(paths, to_strip):
 
     return new_names
 
-def copy_and_overwrite(source ,dest):
+
+def copy_and_overwrite(source, dest):
     if os.path.exists(dest):
         shutil.rmtree(dest)
-    shutil.copytree(source ,dest)
+    shutil.copytree(source, dest)
+
+
+def make_json_meradata_file(path, gaem_dirs):
+    data = {
+        "gameNames": gaem_dirs,
+        "numberofGames": len(gaem_dirs)
+
+    }
+
+    with open(path, "w") as f:
+        json.dump(data, f)
 
 
 def main(source, target):
@@ -53,14 +65,13 @@ def main(source, target):
     new_game_dirs = get_name_from_paths(game_paths, "_game")
 
     create_dir(target_path)
+
+    for src, dest in zip(game_paths, new_game_dirs):
+        dest_path = os.path.join(target_path, dest)
+        copy_and_overwrite(src, dest_path)
     
-    for src ,dest in zip(game_paths,new_game_dirs):
-        dest_path =os.path.join(target_path,dest)
-        copy_and_overwrite(src ,dest_path)
-
-    
-
-
+    json_path =os.path.join(target_path,"metadate.json")
+    make_json_meradata_file(json_path,new_game_dirs)
 
 
 if __name__ == "__main__":
