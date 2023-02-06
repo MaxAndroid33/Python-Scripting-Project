@@ -79,7 +79,7 @@ def run_commend(commend, path):
     os.chdir(path)
 
     result = run(commend ,stdout=PIPE ,stdin=PIPE ,universal_newlines=True)
-    print("compile result :"+ result)
+    print("compile result : ", result)
 
     os.chdir(cwd)
 
