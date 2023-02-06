@@ -8,6 +8,14 @@ from subprocess import PIPE, run
 GAME_DIR_PATTERN = "game"
 
 
+def create_dir(path):
+    if not os.path.exists(path):
+        if os.name is 'nt':
+            os.mkdir(path)
+        elif os.name is 'posix':
+            os.makedirs(path)
+
+
 def find_all_game_paths(source):
     game_paths = []
 
@@ -26,7 +34,7 @@ def main(source, target):
     source_path = os.path.join(cwd, source)
     source_target = os.path.join(cwd, target)
 
-    game_paths =find_all_game_paths(source_path)
+    game_paths = find_all_game_paths(source_path)
     print(game_paths)
 
 
