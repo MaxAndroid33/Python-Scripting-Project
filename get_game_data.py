@@ -6,6 +6,8 @@ from subprocess import PIPE, run
 
 
 GAME_DIR_PATTERN = "game"
+GAM_CODE_EXTENTION = ".go"
+GAME_COMPILE_COMMEND = ["go", "build"]
 
 
 def create_dir(path):
@@ -56,6 +58,32 @@ def make_json_meradata_file(path, gaem_dirs):
         json.dump(data, f)
 
 
+def compile_game_code(path):
+    code_file_name = None
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(GAM_CODE_EXTENTION):
+                code_file_name = file
+                break
+        break
+
+    if code_file_name is None:
+        return
+
+    commend = GAME_COMPILE_COMMEND + [code_file_name]
+    run_commend(commend ,path)
+
+
+def run_commend(commend, path):
+    cwd = os.getcwd()
+    os.chdir(path)
+
+    result = run(commend ,stdout=PIPE ,stdin=PIPE ,universal_newlines=True)
+    print("compile result :"+ result)
+
+    os.chdir(cwd)
+
+
 def main(source, target):
     cwd = os.getcwd()
     source_path = os.path.join(cwd, source)
@@ -69,9 +97,10 @@ def main(source, target):
     for src, dest in zip(game_paths, new_game_dirs):
         dest_path = os.path.join(target_path, dest)
         copy_and_overwrite(src, dest_path)
-    
-    json_path =os.path.join(target_path,"metadate.json")
-    make_json_meradata_file(json_path,new_game_dirs)
+        compile_game_code(dest_path)
+
+    json_path = os.path.join(target_path, "metadate.json")
+    make_json_meradata_file(json_path, new_game_dirs)
 
 
 if __name__ == "__main__":
